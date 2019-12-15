@@ -1,0 +1,32 @@
+<h1>Playlist</h1>
+
+<div>
+  <mat-accordion class="example-headers-align"
+  [multi]="true" #accordion="matAccordion">
+    <mat-expansion-panel [disabled]="panel.isDisabled"
+    [expanded]="panel.isExpanded"
+    [hideToggle]="false"
+    
+    *ngFor="let panel of playlist"
+    #mapanel="matExpansionPanel">
+    <mat-expansion-panel-header >
+        <mat-panel-title>
+            <b>Playlist Title:  {{panel.listTitle}}</b>
+        </mat-panel-title>
+        
+        <mat-panel-description style="text-align: right;">{{panel.description}}</mat-panel-description>
+    
+    </mat-expansion-panel-header>
+        <div *ngFor="let s of panel.song;index as key">
+             <p>
+                 {{s}}
+             </p>   
+            
+        </div>
+        
+        <!-- <mat-action-row>
+            <button mat-stroked-button (click)="update(panel._id)">Click to show details</button>
+        </mat-action-row> -->
+    </mat-expansion-panel>
+</mat-accordion>
+</div>
