@@ -83,3 +83,41 @@
     });
   }
 
+  myplaylist(){
+    this.activatedRoute.queryParams.subscribe((p)=>{
+      const keyword=p.username;
+      if(keyword){
+        this.httpService.myPlaylist(keyword).subscribe((playlist:Playlist[])=>{
+          this.playlist=playlist;
+          console.log(playlist)
+        })
+      }
+    });
+  }
+
+  //create a new playlist
+  createPlaylist(listTitle:string,description:string,status:string,form:NgForm){
+    this.errorMsg="";
+    this.successMsg="";
+
+    this.activatedRoute.queryParams.subscribe((p)=>{
+      const username=p.username;
+      if(username){
+        this.httpService.createPlaylist(listTitle,description,username,status).subscribe((playlist:Playlist[])=>{
+        }),(error:ErrorEvent)=>{
+          this.errorMsg=error.error.massage;
+        }
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        this.successMsg="Successfully create the playlist!"
+      }
+      else{
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        this.errorMsg="Please sign in to create your own playlist!"
+      }
+      
+    });
+    this.resetForm(form);
+  }
+
