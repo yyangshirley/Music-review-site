@@ -48,3 +48,38 @@
       }
     });
   }
+
+  //add song to the playlist
+  addPlaylist(listTitle:string){
+    this.searchSong=[];
+        for(var i=0;i<this.songs.length;i++){
+          this.searchSong[i]=this.songs[i].songTitle;
+        }
+
+    this.activatedRoute.queryParams.subscribe((p)=>{
+      const username=p.username;
+      if(username){
+        for(var i=0;i<this.songs.length;i++){
+          this.searchSong[i]=this.songs[i].songTitle;
+          this.httpService.addSongtoPlaylist(listTitle,username,this.searchSong[i]).subscribe((playlist:Playlist[])=>{
+            // this.playlist=playlist;
+            console.log(this.searchSong)
+
+          }),(error:ErrorEvent)=>{
+            this.errorMsg=error.error.massage;
+          }
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+          this.successMsg="Successfully add to your playlist!"
+          this.myplaylist();
+
+        }
+      }
+      else{
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        this.errorMsg="Please sign in to create your own playlist!"
+      }
+    });
+  }
+
