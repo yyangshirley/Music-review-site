@@ -1,3 +1,58 @@
+import { Component, OnInit, Inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HttpService } from 'src/app/http.service';
+import {animate, state, style, transition, trigger} from '@angular/animations';
+import { Review } from 'src/app/Review';
+import { Song } from 'src/app/Song';
+import { UserService } from '../shared/user.service';
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { Playlist } from 'src/app/Playlist';
+import { NgForm } from '@angular/forms';
+
+
+
+@Component({
+  selector: 'app-song-detail',
+  templateUrl: './song-detail.component.html',
+  styleUrls: ['./song-detail.component.scss'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({height: '0px', minHeight: '0'})),
+      state('expanded', style({height: '*'})),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
+})
+
+export class SongDetailComponent implements OnInit {
+
+  public reviews:Review[];
+  public playlist:Playlist[];
+
+  
+  public songs:Song[];
+  public errorMsg:string;
+  public successMsg:string;
+  constructor(private activatedRoute:ActivatedRoute,
+    private httpService:HttpService,
+    private userService:UserService,
+    private router:Router,
+    public dialog: MatDialog) {}
+
+  ngOnInit() {
+    this.activatedRoute.queryParams.subscribe((p)=>{
+      const title=p.songTitle;
+      const username=p.username;
+      if(username){
+        document.getElementById("button").style.display="";
+      }
+      this.refresh()
+      this.songDetail(title);
+      this.getReviews(title);
+      this.myplaylist();
+    });
+    
+  }
   myplaylist(){
     this.activatedRoute.queryParams.subscribe((p)=>{
       const keyword=p.username;
@@ -59,6 +114,13 @@
     });
   }
  
+  songDetail(keyword:string){
+    this.httpService.searchSong(keyword).subscribe((song:Song[])=>{
+        this.songs=song; 
+        console.log(this.songs)
+    })
+  }
+
   getReviews(title:string){
     this.errorMsg="";
 
@@ -68,6 +130,15 @@
       }),(error:ErrorEvent)=>{
         this.errorMsg=error.error.massage;
       }
+  }
+
+  refresh(){
+    this.activatedRoute.queryParams.subscribe((p)=>{
+      const keyword=p.songTitle;
+      console.log(keyword)
+      this.songDetail(keyword)
+      this.getReviews(keyword)
+    });
   }
 
   writeReview(){
@@ -86,6 +157,11 @@
       }
      
     });
+  }
+
+  logout(){
+    this.userService.deleteToken();
+    this.router.navigate(['/login']);
   }
 
   //write the review
@@ -110,3 +186,9 @@
     this.refresh();
   }
   
+  resetForm(form: NgForm) {
+    
+    form.resetForm();
+  }
+
+}
