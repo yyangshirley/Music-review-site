@@ -272,6 +272,18 @@ router.route('/review/rating')
     })
 })
 
+//show all the playlist
+router.route('/playlist')
+.get(function(req,res){
+    var collection=db.collection('playlists');
+    collection.aggregate([{
+        $match:{status:'public'}
+    },
+]).toArray(function(err,doc){
+        res.json(doc)
+    })  
+})
+
 const rtauth=express.Router();
 rtauth.use(express.json());
 
@@ -436,6 +448,112 @@ rtauth.route('/review/create')
         res.json(doc);
     });
 })
+
+/**
+ * Playlist
+ */
+//create playlist
+rtauth.route('/playlist')
+.post(function(req,res){
+    var playlist=new Playlist();
+    playlist.listTitle=req.body.listTitle;
+    playlist.description=req.body.description;
+    playlist.song=req.body.song;
+    playlist.username=req.body.username;
+    if(req.body.status=null||req.body.status==""){
+        playlist.status="private";
+    }
+    else{
+        playlist.status=req.body.status
+    }
+    playlist.save(function(err,doc){
+        if(err){
+            res.send(err);
+        }
+        res.json(doc);
+    });
+})
+//remove playlist
+.post(function(req,res){
+    var list_collection=db.collection('playlists');
+    list_collection.remove({
+        "username":req.body.username,
+        "listTitle":req.body.listTitle
+    })
+})
+//add songs to playlist
+rtauth.route('/playlist/add')
+.post(function(req,res){
+    var list_collection=db.collection('playlists')
+    var username=req.body.username;
+    list_collection.update(
+        {
+        'username':username,
+        'listTitle':req.body.listTitle,},
+        {$push:{'song':req.body.song}
+        }
+    )
+})
+//remove songs from playlist
+rtauth.route('/playlist/delete')
+.post(function(req,res){
+    var list_collection=db.collection('playlists')
+    var username=req.body.username;
+    list_collection.update(
+        {
+        'username':username,
+        'listTitle':req.body.listTitle,},
+        {$pull:{'song':req.body.song}
+        }
+    )
+})
+
+//modify the playlist
+rtauth.route('/playlist/update')
+.post(function(req,res){
+    var list_collection=db.collection('playlists')
+    var username=req.body.username;
+    list_collection.update(
+        {
+        'username':username,
+        'listTitle':req.body.listTitle,
+        },
+        {$set:{
+            'description':req.body.description,
+            'listTitle':req.body.listTitle,
+            'status':req.body.status
+            }
+        })
+})
+//delete the playlist
+rtauth.route('/deletePlaylist')
+.delete(function(req,res){
+    var list_collection=db.collection('playlists')
+    var username=req.body.username;
+    list_collection.remove({
+        'listTitle':req.body.listTitle,
+        'username':username})
+})
+
+rtauth.post(`/myplaylist`,function(req,res){
+    var username=req.body.username;
+    var list_collection=db.collection('playlists')
+    var reg={};
+    reg['username']=new RegExp(username,"i");
+    if(username){
+        list_collection.find(reg).toArray(function(err,doc){
+            if(err){
+                res.send(err);
+            }
+            res.json(doc);
+            console.log(doc)
+        })
+    }
+    else{
+        res.json("You have not create a playlist")
+    }
+})
+
 
 app.use('/auth',rtauth);
 
