@@ -43,7 +43,72 @@ mongoose.Promise=global.Promise;
 const db=mongoose.connection;
 db.on('error',console.error.bind(console,'MongoDB connection error:'));
 
+//use nodemailer to verify email address
+var nodemailer=require('nodemailer');
+var smtpTransport = nodemailer.createTransport({
+    service: "Gmail",
+    secure: true,
+    port:465,
+    auth: {
+        user: "noreply.musicreview@gmail.com",
+        pass: "ece9065-yyan496-project"
+    }
+});
+var rand,mailOptions,host,link;
+app.get('/verify',function(req,res){
+    var temp_collection=db.collection('tempusers');
+    var user_collection=db.collection('users');
+    console.log(req.protocol+":/"+req.get('host'));
+    if((req.protocol+"://"+req.get('host'))==("http://"+host))
+    {
+        console.log("Domain is matched. Information is from Authentic email");
+        if(req.query.id==rand)
+        {
+            console.log(mailOptions.to+"email is verified");
+            
+            temp_collection.find({'username':mailOptions.to},{'username':1,'password':1,'saltSecret':1,'privilege':1,'status':1})
+            .toArray(function(err,doc){
+                if(err){
+                    return err;
+                }
+                user_collection.insert(doc,function(err,result){
+                    if(err){
+                        return err;
+                    }
+                    temp_collection.deleteOne({'username':mailOptions.to},function(err,result){
+                        if(err){
+                            return err;
+                        }
+                    })
+                })
+            })
+            res.send("<h1>Email "+mailOptions.to+" is been Successfully verified! Now you could sign in!!!");
+        }
+        else
+        {
+            temp_collection.deleteOne({'username':mailOptions.to},function(err,result){
+                if(err){
+                    return err;
+                }
+            });
+            console.log("email is not verified");
+            res.send("<h1>Bad Request</h1>");
+        }
+    }
+    else
+    {
+        res.send("<h1>Request is from unknown source");
+    }
+});
+router.use((req, res, next) => { // for all routes
+  console.log('Request: ', req.method, ' Path: ', req.url, 'Time: ', Date.now());
+  next(); // keep going
+});
+router.get('/', function(req, res) {
+    res.json({ message: 'hooray! welcome to our api!' });   
+});
 
+app.use('/api',router);
 
 const rtauth=express.Router();
 rtauth.use(express.json());
@@ -91,7 +156,58 @@ rtauth.get('/userProfile', function(req, res) {
 	  }
 })
 
+// Create a new user
+rtauth.route('/user/register')
+.post(function (req, res) {
+    let username=req.body.username;
+    console.log(`Creating user ${username}`);
+    var collection=db.collection('users');
 
+    collection.find({"username":username}).toArray(function(err,doc){
+        if(err){
+            return err;
+        }
+        if(doc==null||doc==""){
+            var temp=new Temp();
+            temp.username=req.body.username;
+            temp.password=req.body.password;
+            temp.privilege="";
+            temp.status=";"
+
+            temp.save((err,doc)=>{
+                if(!err){
+                    res.send(doc);
+                }
+                else{
+                    res.send(err);
+                }
+            })	
+
+            rand=Math.floor((Math.random() * 100) + 54);
+            host=req.get('host');
+            link="http://"+req.get('host')+"/verify?id="+rand;
+            
+            mailOptions={
+                to : username,
+                subject : "Please confirm your Email account",
+                html : "Hello,<br> Please Click on the link to verify your email.<br><a href="+link+">Click here to verify</a>"
+            }
+            console.log(mailOptions);
+            smtpTransport.sendMail(mailOptions, function(error, response){
+             if(error){
+                    console.log(error);
+                res.end("error");
+             }else{
+                    console.log("Message sent: " + response.message);
+                res.end("sent");
+                 }
+            }); 
+        }
+        else{
+            res.status(400).send(`Username ${req.body.username} has existed!!!`);
+        }
+    })
+})
 
 app.use('/auth',rtauth);
 
