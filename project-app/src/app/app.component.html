@@ -1,0 +1,22 @@
+<header>
+  <div class="container">
+    <h1>Welcome to Music Review Site</h1>
+    <!-- <a href="#"></a> -->
+    
+  </div>
+</header>
+
+<div class="container">
+  <router-outlet>
+    <mat-toolbar color="primary" class="app-header">
+    <span class="nav-tool-items">
+      <a mat-button routerLink="secure">Home</a>
+      <a mat-button routerLink="login" routerLinkActive="active">Log in</a>
+      <a mat-button mat-raised-button routerLink="register" routerLinkActive="active">Register</a>
+      <a mat-button routerLink="playlist">Playlist</a>
+      <a mat-button routerLink="admin/login">SM log in</a>
+
+    </span>
+    </mat-toolbar>  
+  </router-outlet>
+</div>
