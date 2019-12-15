@@ -110,6 +110,98 @@ router.get('/', function(req, res) {
 
 app.use('/api',router);
 
+/**
+ * Operation on songs
+ */
+///create a new song
+router.route('/song')
+.post(function(req,res){
+    var song=new Song();
+    song.songTitle=req.body.songTitle;
+    song.songArtist=req.body.songArtist;
+    song.albumTitle=req.body.albumTitle;
+    song.year=req.body.year;
+    song.track=req.body.track;
+    song.genre=req.body.genre;
+    song.status="open"
+    
+    song.save(function(err){
+        if(err){
+            res.send(err);
+        }
+        res.json({message:'Song created!!!'});
+    });
+})
+.get(function(req,res){
+    Song.find({
+        'status':{$ne:"hidden"}
+    },(function(err,doc){
+        res.json(doc);
+    }))
+})
+.delete(function(req,res){
+    Song.remove({_id:req.params.id
+    },function(err,song){
+    if(err){
+        res.send(err);
+    }
+    res.json({message:'Successfully deleted'});
+    })
+});
+router.route('/allSong')
+.get(function(req,res){
+    Song.find(function(err,reviews){
+        if(err){
+            res.send(err);
+        };
+        res.json(reviews);
+    });
+});
+
+//set song status
+router.route('/song/status')
+.post(function(req,res){
+    var user_collection=db.collection('songs')
+    user_collection.update(
+        {
+        'songTitle':req.body.songTitle,
+        },
+        {$set:{
+            'status':req.body.status
+            }
+        })
+})
+router.post(`/song/search`,function(req,res){
+    var keyword=req.body.keyword;
+    var song_collection=db.collection('songs')
+    var reg={};
+    // keyword=keyword.replace(/ /g, '');
+    reg=new RegExp(keyword,"i");
+    if(keyword){
+        song_collection.find(
+            {$or:[
+            {songTitle:{$regex:reg}},
+            {songArtist:{$regex:reg}},
+            {albumTitle:{$regex:reg}},
+            {year:{$regex:reg}},
+            {track:{$regex:reg}},
+            {genre:{$regex:reg}}
+        ]}
+        ).toArray(function(err,doc){
+            if(err){
+                res.send(err);
+            }
+            
+            res.json(doc);
+            console.log(doc)
+        })
+    }
+    else{
+        res.json("keyword:"+keyword+" There is no result!!")
+    }
+})
+
+
 const rtauth=express.Router();
 rtauth.use(express.json());
 
