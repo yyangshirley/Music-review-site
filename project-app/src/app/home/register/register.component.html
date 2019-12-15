@@ -1,0 +1,37 @@
+<mat-toolbar *ngIf="successFlag" color="accent">{{successFlag}}</mat-toolbar>
+<mat-toolbar *ngIf="errorMsg" color="warn">{{errorMsg}}</mat-toolbar>
+
+<div class="register-wrapper" fxLayout="row" fxLayoutAlign="center center">
+  <mat-card class="box">
+    <mat-card-header>
+      <mat-card-title>Register</mat-card-title>
+    </mat-card-header>
+  
+    <img src="../../../assets/img/register.png" id="icon" alt="User Icon" />
+
+    <form class="registerForm" #registerForm="ngForm" (ngSubmit)="registerForm.valid && onSubmit(registerForm)">
+      <mat-card-content>
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="Email"  #username="ngModel" [(ngModel)]="userService.selectedUser.username" name="username"
+          required [pattern]="emailRegex"  [ngClass]="{'invalid-textbox' :registerForm.submitted && !username.valid }">
+          <div *ngIf="registerForm.submitted && username.errors">
+            <label *ngIf="username.errors.required" class="validation-message">Username is required.</label>
+            <label *ngIf="username.errors.pattern" class="validation-message">Please enter a valid email address (example:user@xxx).</label>
+          </div>
+        </mat-form-field>
+        
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="Password" type="password" #password="ngModel" [(ngModel)]="userService.selectedUser.password" name="password"
+          minlength="4" required [ngClass]="{'invalid-textbox' :registerForm.submitted && !password.valid }">
+          <div *ngIf="registerForm.submitted && password.errors">
+            <label *ngIf="password.errors.required" class="validation-message">Password is required.</label>
+            <label *ngIf="password.errors.minlength" class="validation-message">Please enter at least 4 characters.</label>
+          </div>
+        </mat-form-field>
+      
+      </mat-card-content>
+      <button mat-stroked-button color="accent" class="btn-block">Register</button>
+    </form>
+
+  </mat-card>
+</div>
