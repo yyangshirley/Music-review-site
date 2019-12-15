@@ -1,0 +1,115 @@
+<header>
+    <title>Music review</title>
+</header>
+<mat-toolbar *ngIf="successMsg" color="accent">{{ successMsg }}</mat-toolbar>
+<mat-toolbar *ngIf="errorMsg" color="warn">{{ errorMsg }}</mat-toolbar>
+
+<div class="searching-container">
+    <form class="search-form" #searchForm='ngForm'>
+        <mat-form-field class="example-full-width">
+            <input matInput placeholder="Search songs" [(ngModel)]="keyword" name="keyword">
+        </mat-form-field> 
+        <button mat-stroked-button (click)='search(keyword)'> Search</button> 
+
+        <div id="searching" class="searching-result" style="display: none;">
+            <h2 class="songs">Results:</h2>
+                <mat-accordion [displayMode]="flat" [multi]="true" #accordion="matAccordion">
+                    <mat-expansion-panel [disabled]="panel.isDisabled"
+                    [expanded]="panel.isExpanded"
+                    [hideToggle]="true"
+                    (opened)="beforePanelOpened(panel)"
+                    (closed)="beforePanelClosed(panel)"
+                    (afterCollapse)="afterPanelClosed($event)"
+                    (afterExpand)="afterPanelOpened($event)"
+
+                    *ngFor="let panel of songs"
+                    #mapanel="matExpansionPanel">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <b>Song Title:  {{panel.songTitle}}</b>
+                        </mat-panel-title>
+                        
+                        <mat-panel-description style="text-align: right;">{{panel.comment}}</mat-panel-description>
+                    
+                    </mat-expansion-panel-header>
+                        <p>Song Artist:  {{panel.songArtist}}</p>
+                        <p>Album Title: {{panel. albumTitle}}</p>
+                        <p>Released Year: {{panel. year}}</p>
+                        <p>Genre: {{panel. genre}}</p>
+                        
+                        <!-- Button -->
+                        <!-- <mat-action-row>
+                            <button mat-flat-button (click)="mapanel.close()">Click to close</button>
+                        </mat-action-row> -->
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+        </div>
+    </form>
+</div>
+
+<div class="introduce-container">
+    <h1 class="title">About</h1>
+    <div class="intro-text container">
+        <p id="content">Welcome to our music review site! <br/></p>
+        <p>In our site, you could browse, create, edit and save reviews for the songs.
+                If you are the member of our site, you can create and manage your own playlists.
+                Furthermore, if you want, you could share playlists with other users and comment public playlists.<br/></p>
+    </div>
+</div>
+
+<mat-spinner *ngIf="loading"></mat-spinner>
+
+<div *ngIf="!loading && !error">
+    <h2 class="reviews">Top Songs</h2>
+  <!-- <table mat-table [dataSource]="reviews" class="mat-elevation-z8">
+
+    <ng-container matColumnDef="songTitle">
+        <th mat-header-cell *matHeaderCellDef> Song Title </th>
+            <td mat-cell *matCellDef="let review"> 
+                {{ review._id }}  
+                <div class="example-element-detail"
+           [@detailExpand]="review.state == expanded ? 'expanded' : 'collapsed'">
+      </div>
+
+            </td>
+        
+    </ng-container>
+    <ng-container matColumnDef="avgRating">
+      <th mat-header-cell *matHeaderCellDef> Average Rating </th>
+      <td mat-cell *matCellDef="let review"> {{ review.average }} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="review_columns"></tr>
+  <tr mat-row *matRowDef="let reviews; columns: review_columns"></tr>
+  </table> -->
+  <mat-accordion [displayMode]="flat" [multi]="true" #accordion="matAccordion">
+    <mat-expansion-panel [disabled]="panel.isDisabled"
+    [expanded]="panel.isExpanded"
+    [hideToggle]="true"
+    (opened)="getLatest(panel._id)"
+    
+
+    *ngFor="let panel of ratings"
+    #mapanel="matExpansionPanel">
+    <mat-expansion-panel-header >
+        <mat-panel-title>
+            <b>Song Title:  {{panel._id}}</b>
+        </mat-panel-title>
+        
+        <mat-panel-description style="text-align: right;">Average Rating:{{panel.average}}</mat-panel-description>
+    
+    </mat-expansion-panel-header>
+        <!-- <p>Song Artist:  {{panel.songArtist}}</p>
+        <p>Album Title: {{panel. albumTitle}}</p>
+        <p>Released Year: {{panel. year}}</p>
+        <p>Genre: {{panel. genre}}</p> -->
+        <p>{{panel.count}} user ratings</p>
+        
+        <!-- Button -->
+        <mat-action-row>
+            <button mat-stroked-button (click)="songDetail(panel._id)">Click to show details</button>
+        </mat-action-row>
+    </mat-expansion-panel>
+</mat-accordion>
+</div>

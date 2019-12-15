@@ -1,0 +1,32 @@
+h1,h2{
+    font-size: 4vw;
+    margin: 80px auto 60px;
+    overflow: visible;
+
+}
+p{
+    font-weight: 400;
+    font-size: 2vw;
+}
+
+table { 
+    margin-top: 50px;
+    width: 100%;
+  }
+  html,body{height:100%;margin:0;padding:0;}
+  body{background-image:url(https://lh4.googleusercontent.com/-XplyTa1Za-I/VMSgIyAYkHI/AAAAAAAADxM/oL-rD6VP4ts/w1184-h666/Android-Lollipop-wallpapers-Google-Now-Wallpaper-2.png);background-position:center;background-size:cover;background-repeat:no-repeat;min-height:100vh;font-family:'Roboto', sans-serif;}
+  .app-header{justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:2;box-shadow:0 3px 5px -1px rgba(0, 0, 0, .2), 0 6px 10px 0 rgba(0, 0, 0, .14), 0 1px 18px 0 rgba(0, 0, 0, .12);}
+  .searching-container{height:100%;}
+  .positronx{text-decoration:none;color:#ffffff;}
+  .box{position:relative;top:0;opacity:1;float:left;padding:60px 50px 40px 50px;width:100%;background:#fff;border-radius:10px;transform:scale(1);-webkit-transform:scale(1);-ms-transform:scale(1);z-index:5;max-width:330px;}
+  .box.back{transform:scale(.95);-webkit-transform:scale(.95);-ms-transform:scale(.95);top:-20px;opacity:.8;z-index:-1;}
+  .box:before{content:"";width:100%;height:30px;border-radius:10px;position:absolute;top:-10px;background:rgba(255, 255, 255, .6);left:0;transform:scale(.95);-webkit-transform:scale(.95);-ms-transform:scale(.95);z-index:-1;}
+  .searching-container .example-form{min-width:100%;max-width:300px;width:100%;}
+  .searching-container .example-full-width,.searching-container .btn-block{width:100%;}
+  .searching-container mat-card-header{text-align:center;width:100%;display:block;font-weight:700;}
+  .searching-container mat-card-header mat-card-title{font-size:30px;margin:0;}
+  .searching-container .mat-card{padding:40px 70px 50px;}
+  .searching-container .mat-stroked-button{border:1px solid currentColor;background:#FFF7FA;}
+  .searching-container .mat-form-field-appearance-legacy .mat-form-field-infix{padding:0.8375em 0;}
+
+  .searching-container .search-form{min-width:100%;max-width:300px;width:100%;}
