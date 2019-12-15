@@ -1,0 +1,87 @@
+
+
+<h1>Privilege Information</h1>
+
+<div class="example-container mat-elevation-z8">
+    <table mat-table [dataSource]="users" class="mat-elevation-z8">
+        <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef> Username </th>
+            <td mat-cell *matCellDef="let user"> {{ user.username }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="privilege">
+            <th mat-header-cell *matHeaderCellDef> Privilege </th>
+            <td mat-cell *matCellDef="let user"> {{ user.privilege }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="operation">
+            <th mat-header-cell *matHeaderCellDef> Operation </th>
+            <td mat-cell *matCellDef="let user">
+                <button mat-stroked-button class="btn-block" (click)="setPrivilege(user.username)">Set Privilege</button>
+                <button mat-stroked-button class="btn-block" (click)="cancelPri(user.username)">Cancel Privilege</button>
+            </td>
+        </ng-container>
+                    
+        <tr mat-header-row *matHeaderRowDef="privilege_columns;sticky: true"></tr>
+        <tr mat-row *matRowDef="let users; columns: privilege_columns"></tr>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+</table> 
+</div>
+
+<h1>Activation Status</h1>
+
+<div class="example-container mat-elevation-z8">
+    <table mat-table [dataSource]="users" class="mat-elevation-z8">
+        <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef> Username </th>
+            <td mat-cell *matCellDef="let user"> {{ user.username }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef> Status </th>
+            <td mat-cell *matCellDef="let user"> {{ user.status }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="operation">
+            <th mat-header-cell *matHeaderCellDef> Operation </th>
+            <td mat-cell *matCellDef="let user">
+                <button mat-stroked-button class="btn-block" (click)="setDe(user.username)">Set Deactivated</button>
+                <button mat-stroked-button class="btn-block" (click)="setAc(user.username)">Set Activated</button>
+            </td>
+        </ng-container>
+                    
+        <tr mat-header-row *matHeaderRowDef="status_columns;sticky: true"></tr>
+        <tr mat-row *matRowDef="let users; columns: status_columns"></tr>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+</table> 
+</div>
+
+<h1>Song Information</h1>
+
+<div class="example-container mat-elevation-z8">
+    <table mat-table [dataSource]="songs" class="mat-elevation-z8">
+        <ng-container matColumnDef="songTitle">
+            <th mat-header-cell *matHeaderCellDef> Song Title </th>
+            <td mat-cell *matCellDef="let song"> {{ song.songTitle }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="visibility">
+            <th mat-header-cell *matHeaderCellDef> Visibility </th>
+            <td mat-cell *matCellDef="let song">{{song.status}}</td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="operation">
+            <th mat-header-cell *matHeaderCellDef> Operation </th>
+            <td mat-cell *matCellDef="let song">
+                <button mat-stroked-button class="btn-block" (click)="setHidden(song.songTitle)">Set Hidden</button>
+                <button mat-stroked-button class="btn-block" (click)="cancelHi(song.songTitle)">Set Open</button>
+            </td>
+        </ng-container>
+                    
+        <tr mat-header-row *matHeaderRowDef="song_columns;sticky: true"></tr>
+        <tr mat-row *matRowDef="let songs; columns: song_columns"></tr>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+</table> 
+</div>
+<p></p>
