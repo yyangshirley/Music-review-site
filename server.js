@@ -202,6 +202,76 @@ router.post(`/song/search`,function(req,res){
 })
 
 
+//show all the latest reviews
+router.route('/review')
+.get(function(req,res){
+    var song_collection=db.collection('songs')
+    song_collection.aggregate([
+        {$lookup:{
+            from:"reviews",
+            localField:"songTitle",
+            foreignField:"songTitle",
+            as:"details"
+        }},
+    ]).toArray(function(err,doc){
+        res.json(doc)
+    })
+})
+//after enter the song title, show the latest review
+.post(function(req,res){
+    var title=req.body.songTitle;
+    var song_collection=db.collection('reviews')
+    var reg={};
+    // title=title.replace(/ /g, '');
+    reg['songTitle']=new RegExp(title,"i");
+    if(title){
+        song_collection.find(reg).sort({"reviewDate":-1}).limit(1).toArray(function(err,doc){
+            if(err){
+                res.send(err);
+            }
+            
+            res.json(doc);
+            console.log(doc)
+        })
+    }
+})
+//show all the review in detail of a song
+router.route('/review/detail')
+.post(function(req,res){
+    var title=req.body.title;
+    var song_collection=db.collection('reviews')
+    var reg={};
+    reg['songTitle']=new RegExp(title,"i");
+    if(title){
+        song_collection.find(reg).sort({"reviewDate":-1}).toArray(function(err,doc){
+            if(err){
+                res.send(err);
+            }
+            res.json(doc);
+            console.log(doc)
+        })
+    }
+})
+
+//show all the songs and rating from high to low (top songs)
+router.route('/review/rating')
+.get(function(req,res){
+    var collection=db.collection('reviews');
+    collection.aggregate([
+        {$group:{
+            _id:"$songTitle",
+            count:{$sum:1},
+            average:{$avg:"$rating"}}},
+        {$sort:{average:-1}},
+        {$limit:10}
+    ]).toArray(function(err,result){
+        for(var r in result){
+            console.log("name:"+result[r]._id+",count:"+result[r].count+",average rating:"+result[r].average);
+        }
+        res.json(result)
+    })
+})
+
 const rtauth=express.Router();
 rtauth.use(express.json());
 
@@ -299,6 +369,24 @@ rtauth.route('/user/register')
             res.status(400).send(`Username ${req.body.username} has existed!!!`);
         }
     })
+})
+
+//user writes comments for the songs
+rtauth.route('/review/create')
+.post(function(req,res){
+    var review=new Review();
+    review.reviews=req.body.reviews;
+    review.rating=req.body.rating;
+    //user does not enter (system automatically)
+    review.reviewDate=req.body.reviewDate;
+    review.songTitle=req.body.songTitle;
+    review.username=req.body.username;
+    review.save(function(err,doc){
+        if(err){
+            res.send(err);
+        }
+        res.json(doc);
+    });
 })
 
 app.use('/auth',rtauth);
