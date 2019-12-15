@@ -371,6 +371,54 @@ rtauth.route('/user/register')
     })
 })
 
+rtauth.route('/user/all')
+.get(function(req,res){
+    User.find(function(err,users){
+        if(err){
+            res.send(err);
+        };
+        res.json(users);
+    });
+})
+rtauth.route('/checkuser')
+.post(function(req,res){
+    var user_collection=db.collection('users')
+    user_collection.find({'username':req.body.username}).toArray(function(err,doc){
+        if(err){
+            res.send(err);
+        }
+        res.json(doc);
+        console.log(doc)
+    })
+})
+//set privilege
+rtauth.route('/user/status')
+.post(function(req,res){
+    var user_collection=db.collection('users')
+    var username=req.body.username;
+    user_collection.update(
+        {
+        'username':username,
+        },
+        {$set:{
+            'status':req.body.status
+            }
+        })
+})
+//set privilege
+rtauth.route('/user/privilege')
+.post(function(req,res){
+    var user_collection=db.collection('users')
+    var username=req.body.username;
+    user_collection.update(
+        {'username':username},
+        {$set:{
+            'privilege':req.body.privilege,
+            }
+        }
+    )
+})
+
 //user writes comments for the songs
 rtauth.route('/review/create')
 .post(function(req,res){
