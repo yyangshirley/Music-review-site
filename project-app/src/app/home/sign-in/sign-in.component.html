@@ -1,0 +1,49 @@
+<mat-toolbar *ngIf="Msg" color="accent">{{Msg}}</mat-toolbar>
+<meta name="google-signin-scope" content="profile email">
+<meta name="google-signin-client_id" content="374198599565-j1tdo3o3fsupbaqoa03182rtrtvfav01.apps.googleusercontent.com">
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<script src="https://cdn.auth0.com/js/auth0/8.12.3/auth0.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+
+
+<div class="login-wrapper" fxLayout="row" fxLayoutAlign="center center">
+
+        <mat-card class="box">
+          <mat-card-header>
+            <mat-card-title>Log in</mat-card-title>
+          </mat-card-header>
+          <img src="../../../assets/img/login.png" id="icon" alt="User Icon" />
+          
+          <form class="login-form" #signInForm="ngForm" (ngSubmit)="signInForm.valid && onSubmit(signInForm)">
+            <mat-card-content>
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="Username (Email)" name="username" #username="ngModel" [(ngModel)]="model.username" [pattern]="emailRegex" required
+                [ngClass]="{'invalid-textbox' :signInForm.submitted && !username.valid }">
+                <div *ngIf="signInForm.submitted && username.errors?.pattern">
+                  <label class="validation-message">Invalid email address.</label>
+                </div>
+              </mat-form-field>
+      
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="Password" [type]="hide ? 'password' : 'text'" name="password" #password="ngModel" [(ngModel)]="model.password" required minlength="4"
+                [ngClass]="{'invalid-textbox' :signInForm.submitted && !password.valid }">
+                <div *ngIf="signInForm.submitted && password.errors?.minlength">
+                  <label class="validation-message">Minimum 4 characters.</label>
+                </div>
+                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                  <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                  </button>
+              </mat-form-field>
+            </mat-card-content>
+            <button id="login" mat-stroked-button color="accent" class="btn-block" type="submit">Log in</button>
+            <button id="register" mat-stroked-button color="blue" class="btn-block" (click)="register()"> New to the site? Sign up now>></button>
+            <div id="gSignInWrapper">
+              <div id="customBtn" class="customGPlusSignIn">
+                <span class="icon"></span>
+                <span class="buttonText" (click)="loginWithGoogle()">Sign in with Google</span>
+                <a href="/login" onclick="googlesignOut();">Sign out</a>
+              </div>
+            </div>
+          </form>
+        </mat-card>
+</div>
