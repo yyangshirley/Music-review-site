@@ -1,0 +1,299 @@
+<header>
+    <title>Music review</title>
+</header>
+<mat-toolbar *ngIf="successMsg" color="accent">{{ successMsg }}</mat-toolbar>
+<mat-toolbar *ngIf="errorMsg" color="warn">{{ errorMsg }}</mat-toolbar>
+<span class="nav-tool-items">
+    <a mat-button (click)="logout()"> Sign out</a> 
+</span>
+
+<div class="searching-container">
+    <form class="search-form" #searchForm='ngForm'>
+        <mat-form-field class="example-full-width">
+            <input matInput placeholder="Search songs" [(ngModel)]="keyword" name="keyword">
+        </mat-form-field> 
+        <button mat-stroked-button (click)='search(keyword)'> Search</button> 
+
+        <div id="searching" class="searching-result" style="display: none;">
+            <h2 class="songs">Results:</h2>
+                <mat-accordion class="example-headers-align"
+                 [multi]="true" #accordion="matAccordion">
+                    <mat-expansion-panel [disabled]="panel.isDisabled"
+                    [expanded]="panel.isExpanded"
+                    [hideToggle]="false"
+
+                    *ngFor="let panel of songs"
+                    #mapanel="matExpansionPanel">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <b>Song Title:  {{panel.songTitle}}</b>
+                        </mat-panel-title>
+                        
+                        <mat-panel-description style="text-align: right;">{{panel.songArtist}}</mat-panel-description>
+                    
+                    </mat-expansion-panel-header>
+                        <p>Song Artist:  {{panel.songArtist}}</p>
+                        <p>Album Title: {{panel. albumTitle}}</p>
+                        <p>Released Year: {{panel. year}}</p>
+                        <p>Track Number: {{panel.track}}</p>
+                        <p>Genre: {{panel. genre}}</p>
+                        
+                        <mat-action-row>
+                            <button mat-stroked-button (click)="songDetail(panel.songTitle)">Click to show details</button>
+                        </mat-action-row>
+                    </mat-expansion-panel>
+                </mat-accordion>
+                <p></p>
+                <div id="addplaylist">
+                    <p></p>
+
+                    <h3>Add songs to your playlist: </h3>
+                    <p></p>
+                    <mat-form-field>
+                        <mat-label>Add to your playlist</mat-label>
+                        <mat-select [(ngModel)]="selected" name="playlist">
+                            <mat-option *ngFor="let p of playlist" [value]="p.listTitle">
+                              {{p.listTitle}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <p></p>
+                    <button mat-stroked-button (click)="addPlaylist(selected)">Click to add results to Your playlist</button>
+                </div>
+        </div>
+    </form>
+</div>
+
+<div class="introduce-container">
+    <h1 class="title">About</h1>
+    <div class="intro-text container">
+        <p id="content">Welcome to our music review site! <br/></p>
+        <p>In our site, you could browse, create, edit and save reviews for the songs.
+                If you are the member of our site, you can create and manage your own playlists.
+                Furthermore, if you want, you could share playlists with other users and comment public playlists.<br/></p>
+    </div>
+</div>
+
+<mat-spinner *ngIf="loading"></mat-spinner>
+
+<div *ngIf="!loading && !error">
+    <h2 class="reviews">Top Songs</h2>
+  <mat-accordion class="example-headers-align"
+   #accordion="matAccordion">
+    <mat-expansion-panel [disabled]="panel.isDisabled"
+    [expanded]="panel.isExpanded"
+    [hideToggle]="false"
+    
+    *ngFor="let panel of ratings"
+    #mapanel="matExpansionPanel">
+    <mat-expansion-panel-header >
+        <mat-panel-title>
+            <b>Song Title:  {{panel._id}}</b>
+        </mat-panel-title>
+        
+        <mat-panel-description style="text-align: right;">Average Rating:{{panel.average}}</mat-panel-description>
+    
+    </mat-expansion-panel-header>
+        <p>{{panel.count}} user ratings</p>    
+        <!-- Button -->
+        <mat-action-row>
+            <button mat-stroked-button (click)="songDetail(panel._id)">Click to show more details</button>
+        </mat-action-row>
+    </mat-expansion-panel>
+</mat-accordion>
+</div>
+
+
+<div id="playlist">
+    <h2 class="myplaylist">Your Playlist</h2>
+  <mat-accordion class="example-headers-align"
+  [multi]="false" #accordion="matAccordion">
+    <mat-expansion-panel [disabled]="panel.isDisabled"
+    [expanded]="panel.isExpanded"
+    [hideToggle]="false"
+    
+    *ngFor="let panel of playlist"
+    #mapanel="matExpansionPanel">
+    <mat-expansion-panel-header >
+        <mat-panel-title>
+            <b>Playlist Title:  {{panel.listTitle}}</b>
+        </mat-panel-title>
+        <mat-panel-description style="text-align: right;">{{panel.description}}</mat-panel-description>
+    
+    </mat-expansion-panel-header>
+        <div *ngFor="let s of panel.song;index as key">
+            <mat-list role="list" style="align-items: center;">
+                <mat-list-item role="listitem">
+                    <p matLine>{{s}}</p>
+                    <button mat-stroked-button style="float: right;" (click)="deleteSong(panel.listTitle,s)">Delete</button>
+                </mat-list-item>
+            </mat-list>
+        </div>
+        <div *ngIf="panel.status=='public';else private">
+            <p style="text-align: left;">Current playlist status:{{panel.status}}</p>
+        </div>
+        <ng-template #private>
+            <p>Current playlist status:private</p>
+        </ng-template>
+        <mat-action-row>
+            
+            <div id="modifyplaylist"> 
+                
+                <label>Playlist visibility: </label>
+                    <mat-radio-group [(ngModel)]="status" name="status">
+                        <mat-radio-button value="private" >Private</mat-radio-button>
+                        <mat-radio-button value="public" >Public</mat-radio-button>
+                    </mat-radio-group>
+                    <a></a>
+                <mat-form-field>
+                    <input matInput placeholder="Playlist Title" [(ngModel)]="listTitle_update" name="listTitle">
+                </mat-form-field>
+                
+                  <mat-form-field>
+                    <input matInput placeholder="Description" [(ngModel)]="description_update" name="description">
+                  </mat-form-field>
+                  <button mat-stroked-button (click)="updatePlaylist(listTitle_update,description_update,status)">Modify</button>
+            </div>
+        </mat-action-row>
+    </mat-expansion-panel>
+</mat-accordion>
+</div>
+
+<div>
+    <form id="createPlaylist"  *ngIf="selected==create" #CreateListForm="ngForm">
+        <h4>Create a new playlist:</h4>
+        <!-- <label>Playlist visibility: </label>
+        <mat-radio-group [(ngModel)]="status" name="status">
+            <mat-radio-button value="private" checked="true">Private</mat-radio-button>
+            <mat-radio-button value="public" checked="false">Public</mat-radio-button>
+        </mat-radio-group> -->
+        <p></p>
+        <mat-form-field>
+            <input Input matInput placeholder="Playlist title" required [(ngModel)]="listTitle" name="listTitle">
+        </mat-form-field>
+
+        <mat-form-field>
+            <input Input matInput placeholder="Description" [(ngModel)]="description" name="description">
+        </mat-form-field>
+        <button mat-stroked-button (click)='createPlaylist(listTitle,description,status,CreateListForm);'>Create</button> 
+
+    </form>
+
+</div>
+<p></p>
+<p></p>
+
+<h1>Song Information</h1>
+
+<div class="example-container mat-elevation-z8">
+    <table mat-table [dataSource]="allSong" class="mat-elevation-z8">
+        <ng-container matColumnDef="songTitle">
+            <th mat-header-cell *matHeaderCellDef> Song Title </th>
+            <td mat-cell *matCellDef="let song"> {{ song.songTitle }} </td>
+        </ng-container>
+
+    <ng-container matColumnDef="songArtist">
+        <th mat-header-cell *matHeaderCellDef> Song Artist </th>
+        <td mat-cell *matCellDef="let song"> {{ song.songArtist }} </td>
+    </ng-container>
+
+<ng-container matColumnDef="albumTitle">
+    <th mat-header-cell *matHeaderCellDef> Album Title </th>
+        <td mat-cell *matCellDef="let song"> {{ song.albumTitle }} </td>
+    </ng-container>
+
+        <ng-container matColumnDef="operation">
+            <th mat-header-cell *matHeaderCellDef> Operation </th>
+            <td mat-cell *matCellDef="let song">
+                <button mat-stroked-button class="btn-block" (click)="songDetail(song.songTitle)">Show More Details</button>
+            </td>
+        </ng-container>
+                    
+        <tr mat-header-row *matHeaderRowDef="song_columns;sticky: true"></tr>
+        <tr mat-row *matRowDef="let allSong; columns: song_columns"></tr>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+</table> 
+</div>
+
+<p></p>
+<button mat-stroked-button (click)="add()">Add a new song</button>
+
+<div class="example-container" id="addSongs" style="display: none;">
+    <h2>Add a new song</h2>
+    <mat-form-field>
+      <input matInput placeholder="Song Title" required [(ngModel)]="songTitle" name="songTitle">
+    </mat-form-field>
+  
+    <mat-form-field>
+      <input matInput placeholder="Song Artist" required [(ngModel)]="songArtist" name="songArtist">
+    </mat-form-field>
+
+    <mat-form-field>
+        <input matInput placeholder="Album Title" [(ngModel)]="albumTitle" name="albumTitle">
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput placeholder="Released Year" [(ngModel)]="year" name="year">
+      </mat-form-field>
+
+      <mat-form-field>
+        <input type="number" matInput placeholder="Track Number (Number)" [(ngModel)]="track" name="track">
+      </mat-form-field>
+
+      <mat-form-field>
+        <input type="number" matInput placeholder="Genre (Number)"[(ngModel)]="genre" name="genre">
+      </mat-form-field>
+    <p></p>
+      <button mat-stroked-button (click)="addSong(songTitle,songArtist,albumTitle,year,track,genre)">Submit</button>
+    </div>
+  <p>
+</p>
+
+<div id="songDetails" style="display: none;">
+    <ng-container class="songDetail">
+        <h1 class="song">Song:</h1>
+    <mat-card class="example-card">
+        <mat-card-header>
+          <div mat-card-avatar class="example-header-image"></div>
+          <mat-card-title>{{songTitle}}</mat-card-title>
+          <mat-card-subtitle>{{songArtist}}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+            <p>Album Title: {{albumTitle}}</p>
+            <p>Released: {{year}}</p>
+            <p>Track Number:{{track}}</p>
+            <p>Genre: {{genre}}</p>
+        </mat-card-content>
+        <mat-card-actions>
+            <button mat-button (click)="writeReview()">Write a review</button>
+          </mat-card-actions>
+      </mat-card>
+
+      <div id="writeReview" style="display: none;">
+        <form class="example-form">
+            <mat-form-field class="example-full-width" hintLabel="Max 100 charactors">
+              <textarea rows="5" cols="50" matInput #input maxlength="200" placeholder="Comment here" required 
+              [(ngModel)]="writeReviews" name="reviews"></textarea>
+              <mat-hint align="end">{{input.value?.length || 0}}/200</mat-hint>
+            </mat-form-field>
+          
+            <mat-form-field class="example-full-width" hintLabel="Limit: Number from 0 to 5">
+              <input type="number" matInput placeholder="Rating here" required 
+              oninput="value=value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');
+              if(value>5)value=5;if(value<0)value=0"
+              [(ngModel)]="rating" name="rating">
+            </mat-form-field>
+            <p></p>
+        </form>
+        <button mat-stroked-button (click)='submit(songTitle,writeReviews,rating)'> Submit</button> 
+        <button mat-stroked-button (click)='cancelReview()'> Cancel</button> 
+    
+    </div>
+    </ng-container>
+<p></p>
+</div>
+
+<p></p>
+<h1>
+
+</h1>
