@@ -1,0 +1,115 @@
+<header>
+    <link rel="stylesheet" href="../../../assets/icofont/icofont.min.css">
+</header>
+<mat-toolbar *ngIf="errorMsg" color="warn">{{ errorMsg }}</mat-toolbar>
+<mat-toolbar *ngIf="successMsg" color="accent">{{ successMsg }}</mat-toolbar>
+
+<p></p>
+<button style="display: none;" id="button" mat-stroked-button (click)="logout()"> Sign out</button> 
+
+<div id="song">
+    <ng-container class="songDetail" *ngFor="let panel of songs">
+        <h1 class="song">Song:</h1>
+    <mat-card class="example-card">
+        <mat-card-header>
+          <div mat-card-avatar class="example-header-image"></div>
+          <mat-card-title>{{panel.songTitle}}</mat-card-title>
+          <mat-card-subtitle>{{panel.songArtist}}</mat-card-subtitle>
+        </mat-card-header>
+        <img mat-card-image src="../../../assets/img//instrumental-music.jpg" alt="music">
+        <mat-card-content>
+            <p>Album Title: {{panel.albumTitle}}</p>
+            <p>Released: {{panel.year}}</p>
+            <p>Track Number:{{panel.track}}</p>
+            <p>Genre: {{panel.genre}}</p>
+        </mat-card-content>
+        <mat-card-actions>
+            <mat-form-field>
+                <mat-label>Add to your playlist</mat-label>
+                <mat-select [(ngModel)]="selected" name="playlist">
+                    <mat-option *ngFor="let p of playlist" [value]="p.listTitle">
+                      {{p.listTitle}}
+                    </mat-option>
+                    <mat-option [value]="create">Create a new playlist</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <button mat-stroked-button (click)='addPlaylist(selected)'>Add</button> 
+
+            <p></p>
+            <div>
+                <form id="createPlaylist"  *ngIf="selected==create" #CreateListForm="ngForm">
+                    <h4>Create a new playlist:</h4>
+                    <label>Playlist visibility: </label>
+                    <mat-radio-group [(ngModel)]="status" name="status">
+                        <mat-radio-button value="private" checked="true">Private</mat-radio-button>
+                        <mat-radio-button value="public" checked="false">Public</mat-radio-button>
+                    </mat-radio-group>
+                    <p></p>
+                    <mat-form-field>
+                        <input Input matInput placeholder="Playlist title" required [(ngModel)]="listTitle" name="listTitle">
+                    </mat-form-field>
+        
+                    <mat-form-field>
+                        <input Input matInput placeholder="Description" [(ngModel)]="description" name="description">
+                    </mat-form-field>
+                    <button mat-stroked-button (click)='createPlaylist(listTitle,description,status,CreateListForm);'>Create</button> 
+
+                </form>
+
+            </div>
+        </mat-card-actions>
+        
+      </mat-card>
+    </ng-container>
+
+</div>
+
+
+<div>
+    <h2 class="reviews">Reviews:</h2>
+<mat-accordion [multi]="true" #accordion="matAccordion">
+    <mat-expansion-panel [disabled]="panel.isDisabled"
+    [expanded]="panel.isExpanded"
+    [hideToggle]="false"
+    
+    *ngFor="let panel of reviews"
+    #mapanel="matExpansionPanel">
+    <mat-expansion-panel-header >
+        <mat-panel-title>
+            <b>User: {{panel.username}}</b>
+        </mat-panel-title>
+        <mat-panel-description style="text-align: right;">{{panel.rating}}</mat-panel-description>
+    
+    </mat-expansion-panel-header>
+        <p>User: {{panel.username}}</p>
+        <p>Comment: {{panel.reviews}}</p>
+        <p>Reviewed on:{{panel.reviewDate}}</p>
+    </mat-expansion-panel>
+</mat-accordion>
+<p></p>
+<button mat-stroked-button (click)='refresh()'> Refresh</button> 
+<p></p>
+<button mat-stroked-button (click)='writeReview()'> Write your review</button> 
+</div>
+
+
+<p></p>
+
+<div id="writeReview" style="display: none;">
+    <form class="example-form">
+        <mat-form-field class="example-full-width" hintLabel="Max 100 charactors">
+          <textarea rows="5" cols="50" matInput #input maxlength="200" placeholder="Comment here" required [(ngModel)]="writeReviews" name="reviews"></textarea>
+          <mat-hint align="end">{{input.value?.length || 0}}/200</mat-hint>
+        </mat-form-field>
+      
+        <mat-form-field class="example-full-width" hintLabel="Limit: Number from 0 to 5">
+          <input type="number" matInput placeholder="Rating here" required 
+          oninput="value=value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');
+          if(value>5)value=5;if(value<0)value=0"
+          [(ngModel)]="rating" name="rating">
+        </mat-form-field>
+        <p></p>
+    </form>
+    <button mat-stroked-button style="right: 0;position:absolute" (click)='submit(writeReviews,rating)'> Submit</button> 
+
+</div>
