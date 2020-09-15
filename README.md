@@ -1,4 +1,5 @@
-# ece9065-yyan496-project
+# Music Review Web Application
+Final project of Web Technology.
 
 Introduction
 ======
